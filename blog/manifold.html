@@ -27,87 +27,133 @@
 
     <div class="article-body">
       <p>
-        Transformers replaced recurrence with a simple idea: let every token look at every other token
-        and decide how much to pay attention. The mechanism is called <em>self-attention</em>, and once
-        you see the matrix version, most of the architecture clicks into place.
+        Have you ever wondered how a rotation matrix changes over time?
+      </p>
+      <p>
+        Imagine a rigid object resting in space. At time (t=0), it has some initial orientation. 
+        Now suppose a force or torque is applied to it. 
+        As the object rotates, its orientation continuously changes until it eventually reaches a new pose.
+        Rather than viewing this motion as a sequence of disconnected orientations, we can think of the orientation as a continuous function of time.
       </p>
 
-      <h2>The core equation</h2>
+      <p>Consider two coordinate frames:</p>
+      <ul>
+        <li>The world frame, which remains fixed.</li>
+        <li>The object frame, which is attached rigidly to the object.</li>
+      </ul>
+
+      <p>For simplicity, assume that at $t = 0$:</p>
+      <ul>
+        <li>The origins of the world and object frames coincide at $[0,0,0]$.</li>
+        <li>The object has no initial rotation.</li>
+      </ul>
 
       <p>
-        Given input embeddings packed into a matrix $X$, we learn three projection matrices
-        $W_Q$, $W_K$, and $W_V$ to form queries, keys, and values:
+        Therefore, the transformation from the object frame to the world frame is simply the identity matrix.
       </p>
-
-      <div class="equation-block">
-        $$Q = XW_Q,\quad K = XW_K,\quad V = XW_V$$
-      </div>
+      <div class="equation-block">$$R(0) = I$$</div>
 
       <p>
-        Scaled dot-product attention computes a weighted sum of values, where weights come from
-        how similar each query is to each key:
-      </p>
+        A force is applied to the object.
+    </p>
+    <p>
+        As the object rotates, the object's coordinate frame rotates along with it. 
+        Although the environment remains fixed, the coordinates of every landmark expressed in the 
+        object frame begin to change because the reference frame itself is changing.
+        After some time (t), the object has reached a new orientation. 
+        The orientation of the object relative to the original frame can be represented by a 
+        $[R|t]$.
+    </p>
+    <p>
+        Transformation matrix can easily tell how much the object has rotated from the original frame.
+    </p>
 
-      <div class="equation-block">
-        $$\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V$$
-      </div>
+    <p>
+        Note : As we are using a rigid body, the object will always maintain the same shape and size in any form.
+        This has a special group of transformations called the Special Orthogonal Group (SO(3)).
+        Which says the basis of R(t) will always be orthonormal and the det(R(t)) will be 1.
+    </p>
+    <p>
+        So, Do we really need to [3x3] Matrix to describe the orientation of an object?
+    </p>
 
-      <p>
-        The scaling factor $\sqrt{d_k}$ keeps dot products from growing too large as dimension
-        increases, which would push softmax into regions with tiny gradients.
-      </p>
+    <p>
+        The answer to above is very simple. No, we don't need [3x3] Matrix to describe the orientation of an object.
+        We can use quaternions, rotation vectors, Euler angles to describe the orientation of an object.
+        But still we use rotation matrices to describe orientation 
+        because it just not store information about the orientation 
+        But also has a power to <em>transform</em> the complete space itself.
+        Also, if you look closely, you will see that the [3x3] Matrix doesn't have 9DOF, 
+        due to the constraints of the SO(3) group. It has 3DOF only but represents by 9 numbers.
+    </p>
+    <p>
+        Now, coming back to the original question, how a rotation matrix changes over time?
+    </p>
 
-      <h2>What the model is actually doing</h2>
+    <p>
+        We know,
+    </p>
+    <div class="equation-block">$$R(t).R(t)^T = I$$</div>
+    <p>For every time t.</p>
 
-      <figure class="figure">
-        <img src="../images/blog/attention-diagram.svg" alt="Diagram showing query, key, and value vectors flowing into an attention block">
-        <figcaption class="figure-caption">
-          Each token produces a query ("what am I looking for?"), a key ("what do I contain?"),
-          and a value ("what information should I pass along?").
-        </figcaption>
-      </figure>
+    <p>
+        Differentiating both sides with respect to time, we get:
+    </p>
+    <div class="equation-block">$$\frac{d}{dt}(R(t)\,R(t)^T) = 0$$</div>
+    <p>
+        Using the product rule, we get:
+    </p>
+    <div class="equation-block">$$\frac{d}{dt}R(t)\,R(t)^T + R(t)\,\frac{d}{dt}R(t)^T = 0$$</div>
+    <p>
+        Rearranging, we get:
+    </p>
+    <div class="equation-block">
+      $$\frac{d}{dt}R(t)\,R(t)^T = -R(t)\,\frac{d}{dt}R(t)^T$$
+      <span class="eq-number">(i)</span>
+    </div>
 
-      <p>
-        Think of attention as a soft lookup table. The query asks a question. Keys advertise what
-        each position offers. Softmax turns match scores into a probability distribution. Values are
-        mixed according to those probabilities.
-      </p>
+    <p>
+        Assume,
+    </p>
+    <div class="equation-block">$$A = \frac{d}{dt}R(t)\,R(t)^T$$</div>
+    <div class="equation-block">$$B = R(t)\,\frac{d}{dt}R(t)^T$$</div>
 
-      <blockquote>
-        Attention is not magic — it is differentiable content-addressable memory with a temperature
-        controlled by $\sqrt{d_k}$.
-      </blockquote>
+    <p> 
+        Taking transpose of A, 
+    </p>
+    <div class="equation-block">$$A^T = (\frac{d}{dt}R(t)\,R(t)^T)^T$$</div>
 
-      <h2>Multi-head attention</h2>
+    <p>
+        Using $(XY)^T = Y^T.X^T$
+    </p>
 
-      <p>
-        Instead of one attention operation, transformers run $h$ heads in parallel, each with its own
-        projections, then concatenate and project again:
-      </p>
+    <div class="equation-block">$$A^T = (R(t)^T)^T.(\frac{d}{dt}R(t))^T$$</div>
+    <div class="equation-block">$$A^T = R(t).(\frac{d}{dt}R(t))^T$$</div>
+    
+    <p>
+        Which is nothing but B. So, $$A^T = B$$ Substituting in (i), we get
+        $$A = -A^T$$
+    </p>
 
-      <div class="equation-block">
-        $$\text{MultiHead}(X) = \text{Concat}(\text{head}_1, \ldots, \text{head}_h)\,W_O$$
-      </div>
+    <p> 
+        Which tell something great here, A is skew matrix.
+    </p>
 
-      <p>
-        Different heads often specialize: one may track syntax, another long-range dependencies,
-        another local patterns. You do not hard-code this — it emerges from training.
-      </p>
+    <p>
+        Assume any matrix m, if $m = m^T$ then it states that 
+        Upper trangular matrix has to be equal to lower trangular matrix. 
+        Only 6 elements required to form a matrix.
+        Now, if $m = -m^T$, look closing the diagonal of m has to be 0, 
+        since taking Transpose not moving diagonal anywhere, 
+        and we are stating that the diagonal values will be negative after Transpose, 
+        which only being statisfy when zero diagonal matrix.
+        So, A skew matrices has only 3 DOF for 3x3 matrix. 
+        This can be represent as a vector.
+    </p>
 
-      <h2>A minimal PyTorch sketch</h2>
+    <div class="equation-block">$$A = \phi(t)$$</div>
+    <div class="equation-block">$$\frac{d}{dt}R(t)\,R(t)^T = \phi(t)$$</div>
 
-      <pre><code>import torch
-import torch.nn.functional as F
-
-def attention(q, k, v):
-    scores = q @ k.transpose(-2, -1) / (q.size(-1) ** 0.5)
-    weights = F.softmax(scores, dim=-1)
-    return weights @ v</code></pre>
-
-      <p>
-        That is the heart of the transformer block. Everything else — positional encodings, layer norm,
-        feed-forward MLPs, residuals — is scaffolding that makes this trainable at scale.
-      </p>
     </div>
   </article>
 </body>

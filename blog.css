@@ -163,13 +163,31 @@ a:hover {
 }
 
 .equation-block {
+  position: relative;
   margin: 32px 0;
-  overflow-x: auto;
+  overflow: visible;
   text-align: center;
+  padding: 0 48px;
 }
 
 .equation-block .katex-display {
   margin: 0;
+}
+
+.equation-block .katex-display > .katex {
+  white-space: normal;
+  max-width: 100%;
+}
+
+.equation-block .eq-number {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: Charter, 'Georgia', serif;
+  font-size: 18px;
+  color: var(--text);
+  user-select: none;
 }
 
 @media (max-width: 600px) {
