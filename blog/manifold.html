@@ -151,8 +151,69 @@
         This can be represent as a vector.
     </p>
 
+    <!-- add phi here vector to matrix to vector conversion -->
     <div class="equation-block">$$A = \phi(t)$$</div>
-    <div class="equation-block">$$\frac{d}{dt}R(t)\,R(t)^T = \phi(t)$$</div>
+    <div class="equation-block">$$\frac{d}{dt}R(t)\,R(t)^T = \phi(t)$$
+      <span class="eq-number">(ii)</span>
+    </div>
+
+    <p>
+      Above equation (ii), $\frac{d}{dt}R$ multiply by $R^T$ on right side represents important thing. 
+      <!-- If you want to transform the space from body to worl frame, 
+      $Pw =RwbPb$ and $Pb = Rwb^-1Pw$
+      where Rwb transforms coordinates from the body frame to the world frame and visa versa. 
+      Since the bases are orthonormal, R^-1 = R^T,  -->
+      multiplying by $R^T$ is simply reverses the rotation.
+      $\frac{d}{dt}R$ describes how the rotation matrix is changing over time. By multiplying it with R^T, 
+      will remove the current orientation and express the change relative to the identity rotation. 
+      In other words, $\frac{d}{dt}R.R^T$ tells us the local or instantaneous rotational change, 
+      independent of the object's current orientation.
+    </p>
+
+    <p>
+      in equation (ii) multiply by R(t) both sides
+    </p>
+    
+    <div class="equation-block">$$\frac{d}{dt}R(t)\,R(t)^T.R(t) = \phi(t)R(t)$$</div>
+    <div class="equation-block">$$R(t)^T.R(t) = I$$</div>
+    <div class="equation-block">$$\frac{d}{dt}R(t) = \phi(t)R(t)$$</div>
+
+    <p>
+      This is nothing by another form of $\frac{d}{da}e^a = a.e^a$. 
+    </p>
+
+    <p>
+      So, from above, 
+    </p>
+
+    <div class="equation-block">$$R(t) = e^\phi(t)$$
+      <span class="eq-number">(iii)</span>
+    </div>
+    
+    <p>
+      Above derivation laid the basic ground for Lie theory. 
+      Lie theory states that Rotation matrix $SO(3)$ forms a 3D manifold in 9 dimension space. 
+      And this manifold is continous nature in space.
+      The vector $\phi(t)$ is <em>tangential vector</em> to the manifold at point $R$.
+      </p>
+      <p>
+        Any point on the manifold represent by a rotation matrix $R(t)$. Think like a earth surface, every point 
+        on earth surface represent by a latitude and longitude.
+        So, similarily any point on the manifold represent by a SO(3) matrix $R(t)$.
+        Since, manifold is a curvature space, so at every point on the manifold, there is a tangent plane. 
+        Tangent plane near R will be represent how fast the curve is changing near to that point.
+      </p>
+    <!-- <p>
+      Now, Let's think more about manifold and tangent space.
+    </p> -->
+    <p>
+      Manifold : Where the R(t) live. In general rotation matrix forms 9 dim  curve only, 
+      As The SO3 matrix is bound by two condition which forced the curve should be in 3 dimensions.
+    </p>
+    <p>
+      Tangent Space around R(t) : Represent local variation around that region. Think Like a mountain, 
+      you can go anywhere, in any direction, depending upon direction you have to walk steep or slope from same point.
+    </p>
 
     </div>
   </article>
