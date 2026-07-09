@@ -1,0 +1,114 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Understanding Transformers — Pushkar Khetrapal</title>
+  <link rel="stylesheet" href="../blog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+</head>
+<body>
+  <nav class="blog-nav">
+    <a href="../index.html">← Home</a>
+  </nav>
+
+  <article class="article">
+    <header class="article-header">
+      <h1 class="article-title">A Life on Manifold</h1>
+      <div class="article-meta">
+        <span>Pushkar Khetrapal</span>
+        <span>July 2026</span>
+        <span>8 min read</span>
+      </div>
+    </header>
+
+    <div class="article-body">
+      <p>
+        Transformers replaced recurrence with a simple idea: let every token look at every other token
+        and decide how much to pay attention. The mechanism is called <em>self-attention</em>, and once
+        you see the matrix version, most of the architecture clicks into place.
+      </p>
+
+      <h2>The core equation</h2>
+
+      <p>
+        Given input embeddings packed into a matrix $X$, we learn three projection matrices
+        $W_Q$, $W_K$, and $W_V$ to form queries, keys, and values:
+      </p>
+
+      <div class="equation-block">
+        $$Q = XW_Q,\quad K = XW_K,\quad V = XW_V$$
+      </div>
+
+      <p>
+        Scaled dot-product attention computes a weighted sum of values, where weights come from
+        how similar each query is to each key:
+      </p>
+
+      <div class="equation-block">
+        $$\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V$$
+      </div>
+
+      <p>
+        The scaling factor $\sqrt{d_k}$ keeps dot products from growing too large as dimension
+        increases, which would push softmax into regions with tiny gradients.
+      </p>
+
+      <h2>What the model is actually doing</h2>
+
+      <figure class="figure">
+        <img src="../images/blog/attention-diagram.svg" alt="Diagram showing query, key, and value vectors flowing into an attention block">
+        <figcaption class="figure-caption">
+          Each token produces a query ("what am I looking for?"), a key ("what do I contain?"),
+          and a value ("what information should I pass along?").
+        </figcaption>
+      </figure>
+
+      <p>
+        Think of attention as a soft lookup table. The query asks a question. Keys advertise what
+        each position offers. Softmax turns match scores into a probability distribution. Values are
+        mixed according to those probabilities.
+      </p>
+
+      <blockquote>
+        Attention is not magic — it is differentiable content-addressable memory with a temperature
+        controlled by $\sqrt{d_k}$.
+      </blockquote>
+
+      <h2>Multi-head attention</h2>
+
+      <p>
+        Instead of one attention operation, transformers run $h$ heads in parallel, each with its own
+        projections, then concatenate and project again:
+      </p>
+
+      <div class="equation-block">
+        $$\text{MultiHead}(X) = \text{Concat}(\text{head}_1, \ldots, \text{head}_h)\,W_O$$
+      </div>
+
+      <p>
+        Different heads often specialize: one may track syntax, another long-range dependencies,
+        another local patterns. You do not hard-code this — it emerges from training.
+      </p>
+
+      <h2>A minimal PyTorch sketch</h2>
+
+      <pre><code>import torch
+import torch.nn.functional as F
+
+def attention(q, k, v):
+    scores = q @ k.transpose(-2, -1) / (q.size(-1) ** 0.5)
+    weights = F.softmax(scores, dim=-1)
+    return weights @ v</code></pre>
+
+      <p>
+        That is the heart of the transformer block. Everything else — positional encodings, layer norm,
+        feed-forward MLPs, residuals — is scaffolding that makes this trainable at scale.
+      </p>
+    </div>
+  </article>
+</body>
+</html>
