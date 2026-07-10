@@ -152,8 +152,24 @@
     </p>
 
     <!-- add phi here vector to matrix to vector conversion -->
-    <div class="equation-block">$$A = \phi(t)$$</div>
-    <div class="equation-block">$$\frac{d}{dt}R(t)\,R(t)^T = \phi(t)$$
+    
+    <div class="equation-block">$$\phi(t) = \begin{bmatrix} \phi_1 \\ \phi_2 \\ \phi_3 \end{bmatrix}$$</div>
+
+    <p>
+        The skew-symmetric matrix representation of $\phi(t)$ is written as $\hat{\phi}(t)$:
+    </p>
+
+    <div class="equation-block">
+      $$\hat{\phi}(t) = \begin{bmatrix}
+        0 & -\phi_3 & \phi_2 \\
+        \phi_3 & 0 & -\phi_1 \\
+        -\phi_2 & \phi_1 & 0
+      \end{bmatrix}$$
+    </div>
+
+
+    <div class="equation-block">$$A = \hat{\phi}(t)$$</div>
+    <div class="equation-block">$$\frac{d}{dt}R(t)\,R(t)^T = \hat{\phi}(t)$$
       <span class="eq-number">(ii)</span>
     </div>
 
@@ -174,9 +190,9 @@
       in equation (ii) multiply by R(t) both sides
     </p>
     
-    <div class="equation-block">$$\frac{d}{dt}R(t)\,R(t)^T.R(t) = \phi(t)R(t)$$</div>
-    <div class="equation-block">$$R(t)^T.R(t) = I$$</div>
-    <div class="equation-block">$$\frac{d}{dt}R(t) = \phi(t)R(t)$$</div>
+    <div class="equation-block">$$\frac{d}{dt}R(t)\,R(t)^T R(t) = \hat{\phi}(t)\,R(t)$$</div>
+    <div class="equation-block">$$R(t)^T R(t) = I$$</div>
+    <div class="equation-block">$$\frac{d}{dt}R(t) = \hat{\phi}(t)\,R(t)$$</div>
 
     <p>
       This is nothing by another form of $\frac{d}{da}e^a = a.e^a$. 
@@ -186,7 +202,7 @@
       So, from above, 
     </p>
 
-    <div class="equation-block">$$R(t) = e^\phi(t)$$
+    <div class="equation-block">$$R(t) = e^{\hat{\phi}(t)}$$
       <span class="eq-number">(iii)</span>
     </div>
     
@@ -207,13 +223,356 @@
       Now, Let's think more about manifold and tangent space.
     </p> -->
     <p>
-      Manifold : Where the R(t) live. In general rotation matrix forms 9 dim  curve only, 
+      Manifold : Where the R(t) live, offen called Lie group. In general rotation matrix forms 9 dim curve only, 
       As The SO3 matrix is bound by two condition which forced the curve should be in 3 dimensions.
     </p>
     <p>
-      Tangent Space around R(t) : Represent local variation around that region. Think Like a mountain, 
+      Tangent Space around R(t) : Represent local variation around that region, offen called Lie algebra. Think Like a mountain, 
       you can go anywhere, in any direction, depending upon direction you have to walk steep or slope from same point.
     </p>
+
+    <p>
+        Equation (iii) kind of establish the relation between manifold and tangent space. 
+        For intuition, let's go a little off topic and understand how Euler's formula works on the complex plane.
+        Assume a vector in the complex plane with angle $\theta$, which can be written as $i\theta$.
+    </p>
+    <div class="equation-block">$$\text{vec} = i\theta$$</div>
+    <p>
+        Taking the exponential of both sides:
+    </p>
+    <div class="equation-block">$$e^{\text{vec}} = e^{i\theta}$$</div>
+    <p>
+        Using Taylor's series to expand $e^{i\theta}$:
+    </p>
+
+    <div class="equation-block">
+      $$e^x = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \frac{x^4}{4!} + \cdots$$
+    </div>
+
+    <!-- <p>
+        Substitute $x = i\theta$. Since $i^2 = -1$, $i^3 = -i$, $i^4 = 1$, and the powers of $i$ cycle:
+    </p>
+
+    <div class="equation-block">
+      $$e^{i\theta} = 1 + i\theta + \frac{(i\theta)^2}{2!} + \frac{(i\theta)^3}{3!} + \frac{(i\theta)^4}{4!} + \cdots$$
+    </div>
+
+    <div class="equation-block">
+      $$e^{i\theta} = 1 + i\theta - \frac{\theta^2}{2!} - i\frac{\theta^3}{3!} + \frac{\theta^4}{4!} + i\frac{\theta^5}{5!} - \cdots$$
+    </div> -->
+
+    <p>
+        Group the real and imaginary terms:
+    </p>
+
+    <!-- <div class="equation-block">
+      $$e^{i\theta} = \left(1 - \frac{\theta^2}{2!} + \frac{\theta^4}{4!} - \cdots\right) + i\left(\theta - \frac{\theta^3}{3!} + \frac{\theta^5}{5!} - \cdots\right)$$
+    </div> -->
+
+    <p>
+        The real part of Taylor series will become $\cos\theta$, and the imaginary part will become $\sin\theta$:
+    </p>
+
+    <!-- <div class="equation-block">
+      $$\cos\theta = 1 - \frac{\theta^2}{2!} + \frac{\theta^4}{4!} - \cdots, \qquad \sin\theta = \theta - \frac{\theta^3}{3!} + \frac{\theta^5}{5!} - \cdots$$
+    </div> -->
+
+    <div class="equation-block">
+      $$e^{i\theta} = \cos\theta + i\sin\theta$$
+      <span class="eq-number">(iv)</span>
+    </div>
+
+    <p>
+        This is Euler's formula.
+    </p>
+    <p>
+        We started with $i\theta$, by taking exponential we see how a tangent vector maps to exponential plane. 
+        This is doing nothing but wrapping $i\theta$ around a circle by angle θ. 
+        Simply mapping a vector (0, θ) to circle/exponential function.
+        This is exactly the kind of structure that shows up when we write $R(t) = e^{\phi(t)}$.
+    </p>
+
+    <p>
+        The vector $\phi(t)$ and the rotation matrix $R(t)$ describe the same physical rotation, 
+        but in different spaces. The rotation matrix is a point on the curved manifold SO(3), 
+        whereas $\phi(t)$ is its local tangent-space (Lie algebra) representation at the identity. 
+        The exponential map converts this tangent-space representation into the corresponding rotation matrix, 
+        and the logarithm performs the inverse conversion (locally).
+    </p>
+    <p>
+        Now, as we understood the significance of Manifold and it's tangent space. 
+        Let's derive the equations which can easily help us map manifold to it's tangent space
+    </p>
+
+    <p>
+        How do we find exponential of Matrix $\hat{\phi}(t)$?
+    </p>
+
+    <p>
+        The answer again laying - taylor's series!
+    </p>
+
+    <p>
+        But before expanding $e^{\hat{\phi}(t)}$, look at $\phi(t)$, 
+        this is nothing but a vector in tangent space which has information about rotation. 
+        Isn't it?
+        And this vector can be expressed as rotation vector in tangent space.
+        $$\phi(t) = \theta\hat{n}$$
+    </p>
+
+    <p>
+        Replacing $\hat{\phi}(t)$ with $\theta\hat{n}$,
+    </p>
+    
+    <div class="equation-block">
+      $$e^{\theta\hat{n}} = \sum_{n=0}^{\infty} \frac{1}{n!}(\theta\hat{n})^n$$
+    </div>
+
+    <div class="equation-block">
+      $$= I + \theta\hat{n} + \frac{1}{2!}\theta^2\hat{n}^2 + \frac{1}{3!}\theta^3\hat{n}^3 + \frac{1}{4!}\theta^4\hat{n}^4 + \cdots$$
+    </div>
+
+    <p>
+        Using $I = nn^T - \hat{n}^2$, and the identities $\hat{n}^3 = -\hat{n}$, $\hat{n}^4 = -\hat{n}^2$, $\ldots$ for a unit vector $n$:
+    </p>
+
+    <div class="equation-block">
+      $$= nn^T - \hat{n}^2 + \theta\hat{n} + \frac{1}{2!}\theta^2\hat{n}^2 - \frac{1}{3!}\theta^3\hat{n} - \frac{1}{4!}\theta^4\hat{n}^2 + \cdots$$
+    </div>
+
+    <div class="equation-block">
+      $$= nn^T + \underbrace{\left(\theta - \frac{1}{3!}\theta^3 + \frac{1}{5!}\theta^5 - \cdots\right)}_{\sin\theta}\hat{n} - \underbrace{\left(1 - \frac{1}{2!}\theta^2 + \frac{1}{4!}\theta^4 - \cdots\right)}_{\cos\theta}\hat{n}^2$$
+    </div>
+
+    <div class="equation-block">
+      $$= \hat{n}^2 + I + \sin\theta\,\hat{n} - \cos\theta\,\hat{n}^2$$
+    </div>
+
+    <div class="equation-block">
+      $$= (1 - \cos\theta)\hat{n}^2 + I + \sin\theta\,\hat{n}$$
+    </div>
+
+    <div class="equation-block">
+      $$= \cos\theta\,I + (1 - \cos\theta)\,nn^T + \sin\theta\,\hat{n}$$
+      <span class="eq-number">(v)</span>
+    </div>
+
+    <p>
+        Equation (v) is Rodrigues' formula — the closed-form exponential map from the tangent space to SO(3). Given any vector
+        in the tangent space, it can be mapped onto the SO(3) manifold:
+    </p>
+
+    <div class="equation-block">
+      $$\underbrace{\phi}_{\text{tangent space}} \xrightarrow{\exp} \underbrace{R}_{\text{manifold}}$$
+    </div>
+
+    <p>
+        We understood about manifold, tangent space, relation between both. But Why do we care about it at all?
+    </p>
+
+    <p>
+        We have already discussed how to transform coordinates between spaces. Now, consider a rigid body moving over time. 
+        At each discrete time step, the body undergoes a small rotation relative to its previous pose and given by $R_{[t,t+1]}$
+    </p>
+
+    <p>
+        Over time the relation will become,
+        $$P_b = R_{[t,t-1]}...R_{[2,1]}R_{[1,0]}P_w$$
+    </p>
+
+    <p>
+        You must have noticed one thing here, if a rotation changes sightly we are multiplying R with prev one. 
+        $\delta{R}.R$, As multiplying two matrices of SO(3) will always be another matrix on SO(3). 
+        But adding two matrices will not statisfing the rule.
+    </p>
+    <p>
+        Thing like a car, moving in space, to find it's new location, can expressed as $$P_{new} = P + \delta{v}$$ for unit time.
+    </p>
+    <p>
+        But for rotation this, doesn't make sense adding $R + \delta{R}$, multiplying makes sense and it also follow the rule also.
+    </p>
+
+    <p>
+        Now, we see multiplying the matrices will let you stay on manifold. 
+        A matrix R and Q on manifold, the resultant QR will always be another matrix on SO(3) but it can be anywhere.
+        $$R_{res} = QR$$
+        Thing like you are on position R, and you want to go on $R_{res}$, how will you go there? But multiplying with Q. 
+        This is like teleportation on manifold. And Q is here a matrix which makes motion.
+    </p>
+
+    <p>
+        Now the question araises, how do we travel on manifold? How can apply very small changes on rotation matrix?
+    </p>
+
+    <p>
+        There should be some matrix Q which can make very small change on R. 
+        Controlling Q will makes us travel over manifold.
+    </p>
+
+    <p>
+        To generate Q, which I don't know right now. Can I use any small vector from tangential space, 
+        representing any vector will be very easy and inituitive then SO(3) matrix. And also, skew matrix basis will always be orthonormal
+        and determinate 1. 
+    </p>
+
+    <p>
+        Let's start with example 1, Assume a right body, we want make change in yaw but $90\degree$ over 3 seconds
+    </p>
+
+    <p>
+        Now, setting discrete time $$step = 10$$ every 0.3 sec the right body moves 0.158 rad in yaw. 
+    </p>
+
+    
+    <div class="equation-block">$$\phi(t) = \begin{bmatrix} 0 \\ 0 \\ 0.158 \end{bmatrix}$$</div>
+
+    <p>
+        Converting $\phi = \theta\hat{n}$
+    </p>
+
+    <div class="equation-block">$$\theta\hat{n} = 0.158\begin{bmatrix} 0 \\ 0 \\ 1 \end{bmatrix}$$</div>
+
+    <p>
+        from above equation (v),
+    </p>
+
+    <div class="equation-block">
+        $$\begin{aligned}
+          e^{0.158\,\hat{n}}
+          &= \cos(0.158)\,I + (1 - \cos(0.158))\,nn^T + \sin(0.158)\,\hat{n} \\[6pt]
+          &= \cos(0.158)\,I + (1 - \cos(0.158))
+          \begin{bmatrix} 0 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 1 \end{bmatrix}
+          \end{aligned}$$
+    </div>
+    <div class="equation-block">  
+        $$\begin{aligned}
+        + \sin(0.158)
+          \begin{bmatrix} 0 & -1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 0 \end{bmatrix}
+        \end{aligned}$$
+    </div>
+
+    <div class="equation-block">  
+        $$\begin{aligned} = 
+        \begin{bmatrix} cos(\theta) & 0 & 0 \\ 0 & cos(\theta) & 0 \\ 0 & 0 & cos(\theta) \end{bmatrix}
+        + \begin{bmatrix} 0 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 1 - cos(\theta) \end{bmatrix}
+        + \begin{bmatrix} 0 & -sin(\theta) & 0 \\ sin(\theta) & 0 & 0 \\ 0 & 0 & 0 \end{bmatrix}
+        \end{aligned}$$
+    </div>
+
+    <div class="equation-block">
+        $$\begin{aligned} =
+        \begin{bmatrix} cos(\theta) & -sin(\theta) & 0 
+        \\ sin(\theta) & cos(\theta) & 0 
+        \\ 0 & 0 & 1 \end{bmatrix}
+        \end{aligned}$$
+    </div>
+
+    <p>
+        where $\theta$ = 0.158
+    </p>
+
+    <p>
+        Isn't this cool, rotating around Z axis, gives us 2d rotation matrix. Rotating about the z-axis only affects 
+        the x and y coordinates. The z-coordinate remains unchanged. 
+        As a result, the upper-left 2x2 block is exactly the familiar 2D rotation matrix.
+    </p>
+    <p>
+        Now, But there one this, we calculated $\phi(t)$ at origin/Identity. Not near R. 
+        Thing, the like a force with "x" magnitude, and the resultant depend upon where are we applying force on object. 
+        Not the just amount of force. Here also, this $\phi$ is near to Identity. How much is going to affected R is actually 
+        depend upon where the R is on manifold.
+    </p>
+
+    <p>
+        With above comments, let's Introduce <em>Left and Right translation</em>.
+    </p>
+
+    <p>
+        Starting with setting up some variables. 
+        World coordinates are at <em>I</em>, a rigid object at <em>R</em>.
+        Instead of representing object by coordinate but representing by rotation matrix R. So, to coming back, 
+        just multiply with $R^T$.
+        Now, Assume you want to move object in world frame by Q.
+        Then,
+    </p>
+    <p>
+        $$Object_{world} = Q(R.Object_{body})$$
+    </p>
+    <p>
+        But now, I just want move the body frame.
+        $$Object_{world} = R(Q.Object_{body})$$
+    </p>
+    <p>
+        You see the difference, multiply with Q on left, actually rotating in world frame.
+        And multiply with Q on right, actually rotating in body frame.
+    </p>
+
+    <p>
+        Left translation = World Frame
+    </p>
+    <p>
+        Right translation = Body Frame
+    </p>
+    <p>
+        Note: $QR \neq RQ$
+    </p>
+
+    <p>
+        Going back to example (1), 
+        we expressed $$e^{\hat{\phi}} = \begin{bmatrix} cos(\theta) & -sin(\theta) & 0 
+        \\ sin(\theta) & cos(\theta) & 0 
+        \\ 0 & 0 & 1 \end{bmatrix}$$
+
+        $$R_{new} = Re^{\hat{\phi}}$$
+    </p>
+    <p>
+        Since we want to move actual R(body) $90\degree$ in yaw. that's why we multiply $\hat{\phi}$ on right. 
+        Putting loop over steps, calculating $R_{new}$ and updating $R = R_{new}$ for next iteration, 
+        will able to travel on manifold.
+    </p>
+
+    <pre><code>
+        for _ in range(steps):
+            c, s = np.cos(theta), np.sin(theta)
+
+            # small rotation in body frame: Q = exp(hat(phi))
+            Q = np.array([
+                [ cos(theta), -sin(theta), 0],
+                [ sin(theta),  cos(theta), 0],
+                [ 0,                    0, 1],
+            ])
+
+            R_new = R @ Q
+            R = R_new        
+            print(R)
+        </code></pre>
+    <p>
+        One thing you must have noticed in above loop : 
+        $$Re^{\hat{\phi}}e^{\hat{\phi}}e^{\hat{\phi}}e^{\hat{\phi}}...$$
+
+        and R can also be expressed as $e^{\hat\varphi}$
+        so,
+        $$e^{\hat\varphi}e^{\hat{\phi}}e^{\hat{\phi}}e^{\hat{\phi}}e^{\hat{\phi}}...$$
+
+        can it be represent $$e^{\hat\varphi + \hat{\phi} + \hat{\phi} + \hat{\phi} + ...} ?$$
+
+    </p>
+
+    <p>
+        The answer is No, it you remember $RQ \neq QR$. Assume $e^Re^Q == e^Qe^R$, then $e^{R+Q} = e^{Q+R}$, 
+        which says R + Q == Q + R, and this can't be statisfy for SO(3) groups.
+    </p>
+
+    <p>
+        Since, $RQ \neq QR$, can we add some correction C which makes 
+        $$RQ = QR + C$$
+        or, 
+
+        $$C = RQ - QR$$
+
+    </p>
+
+    
 
     </div>
   </article>
