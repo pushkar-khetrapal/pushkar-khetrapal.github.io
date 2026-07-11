@@ -559,21 +559,57 @@
     </p>
 
     <p>
-        The answer is No, it you remember $RQ \neq QR$. Assume $e^Re^Q == e^Qe^R$, then $e^{R+Q} = e^{Q+R}$, 
-        which says R + Q == Q + R, and this can't be statisfy for SO(3) groups.
+        The answer is No, it you remember $\hat\phi_1\hat\phi_2 \neq \hat\phi_2\hat\phi_1$. 
+    </p>
+    <p></p>
+        Assume $e^{\hat\phi_1}e^{\hat\phi_2} == e^{\hat\phi_2}e^{\hat\phi_1}$, 
+        then $e^{\hat\phi_1+\hat\phi_2} = e^{\hat\phi_2+\hat\phi_1}$, 
+        which says $\hat\phi_1+\hat\phi_2 == \hat\phi_2+\hat\phi_1$, 
+        and this can't be statisfy for SO(3) groups.
     </p>
 
     <p>
-        Since, $RQ \neq QR$, can we add some correction C which makes 
-        $$RQ = QR + C$$
-        or, 
-
-        $$C = RQ - QR$$
-
+        Can we add some correction C which makes 
+        $$\hat\phi_1+\hat\phi_2 == \hat\phi_2+\hat\phi_1 + C$$
     </p>
 
-    
+    <p>
+      Which is nothing but,
+      $$e^{\hat\phi_1}e^{\hat\phi_2} == e^{\hat\phi_2}e^{\hat\phi_1}e^C$$
+    </p>
 
+    <p>
+      Now expanding, 
+      $$e^{\hat\phi_1} = I + {\hat\phi_1} + \frac{{\hat\phi_1}^2}{2} ...$$
+      $$e^{\hat\phi_2} = I + {\hat\phi_2} + \frac{{\hat\phi_2}^2}{2} ...$$
+      $$e^{C} = I + C + \frac{C^2}{2} ...$$
+    </p>
+
+    <p>
+      $$(I + {\hat\phi_1} + \frac{{\hat\phi_1}^2}{2} ...)
+      (I + {\hat\phi_2} + \frac{{\hat\phi_2}^2}{2} ...) = 
+      (I + {\hat\phi_2} + \frac{{\hat\phi_2}^2}{2} ...)
+      (I + {\hat\phi_1} + \frac{{\hat\phi_1}^2}{2} ...)
+      (I + C + \frac{C^2}{2} ...)
+      $$
+    </p>
+
+    <p>
+      $$I + {\hat\phi_1} + {\hat\phi_2} + {\hat\phi_1}{\hat\phi_2} + \frac{{\hat\phi_1}^2}{2} + \frac{{\hat\phi_2}^2}{2} ... = 
+      I + {\hat\phi_1} + {\hat\phi_2} + C + {\hat\phi_2}{\hat\phi_1} + {\hat\phi_2}C + {\hat\phi_1}C ...$$
+    </p>
+    <p>
+      $${\hat\phi_1}{\hat\phi_2} = C + {\hat\phi_2}{\hat\phi_1}$$
+    </p>
+
+    <div class="equation-block">
+      $$C = {\hat\phi_1}{\hat\phi_2} - {\hat\phi_2}{\hat\phi_1}$$
+      <span class="eq-number">(vi)</span>
+    </div>
+
+    <p>
+      This correction comes down to one cool thing, called Lie Bracket!
+    </p>
     </div>
   </article>
 </body>
