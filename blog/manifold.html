@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Understanding Transformers — Pushkar Khetrapal</title>
+  <title>A Life on Manifold</title>
   <link rel="stylesheet" href="../blog.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
@@ -559,6 +559,88 @@
     </p>
 
     <p>
+      And this takes to new Topic <b>BCH Formula</b>!
+    </p>
+
+    <p>
+      Assume $R,Q \in SO(3)$, and $R=e^{\hat{r}}$, $Q=e^{\hat{q}}$,
+      and r, q are vectors in tangent space.
+    </p>
+
+    <p>
+        Assume $e^{r}e^{q} == e^{q}e^{r}$, 
+        then $e^{r+q} == e^{q+r}$, 
+        which says $$r+q == q+r$$, 
+        but this can't be statisfy for SO(3) groups. Rotation doesn't commute $RQ \neq QR$
+    </p>
+    <p>
+      Henry baker and others came up with a idea, if they are not equal then what to add to make it communal. 
+      Simply,
+      $$r+q = r+q+c$$
+      c is some higher order degree correction term.
+    </p>
+    <p>
+      Enabling in above eqn
+      $$e^{r}e^{q} == e^{r+q+c}$$
+    </p>
+    <p>
+      Expanding, 
+      $$e^{r} = I + r + \frac{{r}^2}{2} ...$$
+      $$e^{q} = I + q + \frac{{q}^2}{2} ...$$
+      $$e^{q+r+c} = I + q + r + c + \frac{{(q+r+c)}^2}{2} ...$$
+    </p>
+    <p>
+      $$(I + r + \frac{{r}^2}{2} ...)(I + q + \frac{{q}^2}{2} ...) = $$
+      $$I + q + r + c + \frac{{(q+r+c)}^2}{2} ...$$
+    </p>
+
+    <p>
+      $$I + r + q + rq + \frac{r^2}{2} + \frac{q^2}{2} ... = I + q + r + c + \frac{q^2 + qr + qc + rq + r^2 + rc + cq + cr + c^2}{2} ...$$
+    </p>
+
+    <p>
+      For simplicity, ignoring higher order term,
+    </p>
+    <p>
+      $$I + r + q + rq + \frac{r^2}{2} + \frac{q^2}{2} = I + q + r + c + \frac{q^2 + qr + rq + r^2}{2}$$
+
+      $$rq = c + \frac{qr + rq}{2}$$
+
+      $$c = rq - \frac{qr + rq}{2}$$
+      $$c = \frac{rq - qr}{2}$$
+    </p>
+
+
+    <div class="equation-block">
+      $$c = \frac{rq - qr}{2}$$
+      <span class="eq-number">(vi)</span>
+    </div>
+
+    <p>
+      This correction comes down to one cool thing, called Lie Bracket!
+    </p>
+    <p>
+      Lie Bracket is nothing but the infinitesimal difference between two motions performed in opposite orders. And 
+      this is donated by Bracket, like $[A, B]$.
+    </p>
+    <p>
+      Thing like, 
+    </p>
+    <p>
+      if $AB==BA$, then $[A, B] = 0$. Else $[A, B]=AB-BA$
+    </p>
+    <p>
+      Also, it has some important properties as well.
+      <li>$[A, B] = -[B, A]$</li>
+      <li>$[A, B] = \hat{A}$x$\hat{B}$</li>
+    </p>
+    <p>
+      Now, Let's dig deeper in Understanding how can we add multiple vector to achieve the rotation.
+    </p>
+    </p>
+
+    <!-- Lie Bracket derivation -->
+    <!-- <p>
         The answer is No, it you remember $\hat\phi_1\hat\phi_2 \neq \hat\phi_2\hat\phi_1$. 
     </p>
     <p></p>
@@ -590,9 +672,10 @@
       (I + {\hat\phi_2} + \frac{{\hat\phi_2}^2}{2} ...) = 
       (I + {\hat\phi_2} + \frac{{\hat\phi_2}^2}{2} ...)
       (I + {\hat\phi_1} + \frac{{\hat\phi_1}^2}{2} ...)
-      (I + C + \frac{C^2}{2} ...)
+      (I + C)
       $$
     </p>
+    <p>Since, we are talking about very changes, and C is already higher order variable, skipping higher order terms</p>
 
     <p>
       $$I + {\hat\phi_1} + {\hat\phi_2} + {\hat\phi_1}{\hat\phi_2} + \frac{{\hat\phi_1}^2}{2} + \frac{{\hat\phi_2}^2}{2} ... = 
@@ -610,6 +693,25 @@
     <p>
       This correction comes down to one cool thing, called Lie Bracket!
     </p>
+    <p>
+      Lie Bracket is nothing but the infinitesimal difference between two motions performed in opposite orders. And 
+      this is donated by Bracket, like [A, B].
+    </p>
+    <p>
+      Thing like, 
+    </p>
+    <p>
+      if $AB==BA$, then $[A, B] = 0$. Else $[A, B]=AB-BA$
+    </p>
+    <p>
+      Also, it has some important properties as well.
+      <li>[A, B] = -[B, A]</li>
+      <li>[A, B] = $\hat{A}$x$\hat{B}$</li>
+    </p>
+    <p>
+      Now, Let's dig deeper in Understanding how can we add multiple vector to achieve the rotation.
+    </p> -->
+
     </div>
   </article>
 </body>
