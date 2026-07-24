@@ -146,7 +146,8 @@ a:hover {
 }
 
 .figure img,
-.figure video {
+.figure video,
+.figure svg {
   width: 100%;
   height: auto;
   display: block;
@@ -160,6 +161,42 @@ a:hover {
   text-align: center;
   margin-top: 12px;
   line-height: 1.4;
+}
+
+.article-body table,
+.article-body .article-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 28px;
+  font-size: 18px;
+  border: 2px solid #555;
+}
+
+.article-body th,
+.article-body td {
+  padding: 12px 16px;
+  text-align: left;
+  border: 1px solid #888;
+}
+
+.article-body thead th {
+  background: #f0f0f0;
+  border-bottom: 2px solid #555;
+}
+
+.article-body th {
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.article-body tfoot td {
+  font-weight: 700;
+  border-top: 2px solid #555;
+  background: #f0f0f0;
 }
 
 .equation-block {
