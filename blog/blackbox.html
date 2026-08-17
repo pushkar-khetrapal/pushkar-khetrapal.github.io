@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BlackBox - A Sensor Handheld for Environment Mapping</title>
+  <link rel="stylesheet" href="../blog.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+</head>
+<body>
+  <nav class="blog-nav">
+    <a href="../index.html">← Home</a>
+  </nav>
+
+  <article class="article">
+    <header class="article-header">
+      <h1 class="article-title">BlackBox - A Sensor Handheld Device</h1>
+      <div class="article-meta">
+        <span>Pushkar Khetrapal</span>
+        <span>July 2026</span>
+        <span>5 min read</span>
+      </div>
+    </header>
+
+    <div class="article-body">
+        <p>Training and validating robotic systems in the real world is expensive, time-consuming, and difficult to scale. 
+            Collecting enough data to capture the diversity of real-world environments, objects, lighting conditions, 
+            sensor configurations, and edge cases is a significant challenge.
+            More importantly, a system that performs well in one environment does not necessarily generalize to another. 
+            Differences in the environment, sensor setup, appearance, 
+            and operating conditions can significantly affect the performance of a perception system.
+            
+            Simulation provides a promising way to address this problem.
+            
+            In a simulated environment, we can generate large amounts of data at a much lower cost, 
+            control the environment, reproduce scenarios deterministically, 
+            and expose the robot to a much wider range of conditions. 
+            We can also deliberately introduce variations in objects, poses, lighting, textures, and 
+            other environmental parameters to improve the robustness of the trained models.
+      
+      <h2>Introducing BlackBox</h2>
+
+      <p>BlackBox is sensor Handheld device consist of Unitree Lidar L2, ZedX 4k Cameras, ZedX Stereo Camera.
+        The idea is simple: capture the real world first, then use that data as the foundation for building a digital representation
+         of the environment.
+        Instead of manually creating a virtual environment from scratch, 
+        Blackbox allows us to scan an existing environment and capture the information required to reconstruct it digitally.
+        The LiDAR provides the geometric structure of the environment, 
+        while the cameras provide the visual information needed to reproduce its appearance.        
+      </p>
+    
+      
+
+      <div class="equation-block">
+        $$\sum_{i=1}^{n} x_i = x_1 + x_2 + \cdots + x_n$$
+      </div>
+
+      <figure class="figure">
+        <img src="../images/blog/your-image.png" alt="Describe the image">
+        <figcaption class="figure-caption">Caption for your image or screenshot.</figcaption>
+      </figure>
+
+      <figure class="figure">
+        <img src="../images/blog/your-animation.gif" alt="Describe the GIF">
+        <figcaption class="figure-caption">GIFs work the same way — just use an img tag.</figcaption>
+      </figure>
+
+      <pre><code>// Code blocks use pre + code
+function hello() {
+  return "world";
+}</code></pre>
+
+      <blockquote>A pull quote or key insight.</blockquote>
+
+      <p>Closing thoughts.</p>
+    </div>
+  </article>
+</body>
+</html>
