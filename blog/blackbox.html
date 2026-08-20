@@ -211,9 +211,69 @@
         <figcaption class="figure-caption">Electronics assembly and circuit testing</figcaption>
       </figure>
 
+      <h4>Power Distribution</h4>
       <p>
+        The system is powered by a UGREEN power bank capable of supplying 20 V at 2.25 A (45 W). 
+        Power is extracted from the power bank using a USB-PD decoy module.
         
-      </p>
+    </p>
+    <p>
+        The LiDAR and ZED capture cards operate at 12 V, so a buck converter is used to step down the 20 V output to 12 V. 
+        The LiDAR and cameras draw a maximum of approximately 1.2 A combined (~1 A for the LiDAR and the remaining 
+        current for the cameras), which is within the buck converter's capacity. 
+        Current remained stable during operation with no noticeable oscillation.
+    </p>
+        
+    <p>
+        The Jetson Orin Nano supports 12-20 V input. Initially, it was powered through the buck converter, 
+        but the converter could not provide sufficient current during peak processing loads, causing the Nano to reboot. 
+        The Nano was therefore connected directly in parallel with the buck converter, 
+        allowing it to receive the required current directly from the 20 V supply.
+    </p>
+    
+    <p>
+        A 2A fuse is installed before the main power switch for protection.
+    </p>
+    
+    <p>
+        Full-load testing showed that the available power is sufficient for approximately 4 hours of continuous data recording.
+    </p>
+    
+    <p>
+        For convenient charging, the power-bank input is routed to an external male-to-female extension connector mounted on the enclosure.
+        An Ethernet extension is also mounted on the enclosure, allowing the system to be connected to an external network without opening the enclosure.
+    </p>
+
+      <h3>Assembly</h3>
+
+      <figure class="figure">
+        <video src="../images/blog/blackbox/assembly-web.mp4" poster="../images/blog/blackbox/assembly-poster.jpg" autoplay loop muted playsinline controls>
+          Your browser does not support embedded video.
+        </video>
+        <figcaption class="figure-caption">Final assembly of the BlackBox enclosure</figcaption>
+      </figure>
+
+    <h3>Software Architecture</h3>
+
+    <p>The system provides a ROS2 interface and the software is divided into two main stages: data recording on the device and log processing/map generation.</p>
+    <p>
+        Has a interface with ROS2. The code written in two parts. Recording on device. Copy logs and build the maps.
+        A pseudo rosbag recorder has been written. As the the image data is very huge, 3 cameras frames 2 at 1080p@30hz, 1 at 4k@15hz.
+        normal rosbag record wouldn't sufficient. So, I used Zed SDK to record the data and for lidar I saved PCD files. 
+        Since individual sensor record wouldn't what we need. So I added a Master, which updates by each thread of sensors when 
+        they save the sensor data with timestampa and where they have saved. A Master has every timestamp information which helps 
+        us to replay the data.
+    </p>
+
+    <p>
+        Calibration has done using target based markers. The all cameras has been calibrated with lidar. Will talk about calibration 
+        in another blog.
+    </p>
+
+    <p>
+        Some 3d map output.
+    </p>
+
     </div>
   </article>
 </body>
