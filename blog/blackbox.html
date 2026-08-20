@@ -40,10 +40,12 @@
             and expose the robot to a much wider range of conditions. 
             We can also deliberately introduce variations in objects, poses, lighting, textures, and 
             other environmental parameters to improve the robustness of the trained models.
+        </p>
       
       <h2>Introducing BlackBox</h2>
 
-      <p>BlackBox is sensor Handheld device consist of Unitree Lidar L2, ZedX 4k Cameras, ZedX Stereo Camera.
+      <p>
+        BlackBox is sensor Handheld device consist of Unitree Lidar L2, ZedX 4k Cameras, ZedX Stereo Camera.
         The idea is simple: capture the real world first, then use that data as the foundation for building a digital representation
          of the environment.
         Instead of manually creating a virtual environment from scratch, 
@@ -52,16 +54,92 @@
         while the cameras provide the visual information needed to reproduce its appearance.        
       </p>
     
+      <h3>Design</h3>
       
+      <p>
+        Portability and onboard computation were two of the primary hardware requirements. 
+        The device needed to be capable of mapping large environments without relying on external 
+        power or computing resources. I integrated a power bank for portable operation and an 
+        NVIDIA Jetson Orin Nano for onboard data processing and map generation.
+      </p>
+
+      <p>
+        Since Blackbox was intended primarily as an experimentation platform, 
+        I designed the system with multiple cameras: two ZED One 4K cameras and one ZED X stereo camera,
+         alongside the Unitree LiDAR L2. This provided a flexible sensor setup for experimenting with 
+         different perception, reconstruction, and sensor-fusion approaches.
+      </p>
+      
+      <h3>Hardware components</h3>
+      <figure class="figure">
+        <img src="../images/blog/your-image.png" alt="Describe the image">
+        <figcaption class="figure-caption">Caption for your image or screenshot.</figcaption>
+      </figure>
+
+      <table class="article-table">
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Cost</th>
+            <th>Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Unitree 4D LiDAR L2</td>
+            <td>$419</td>
+            <td><a href="https://shop.unitree.com/products/unitree-4d-lidar-l2">Unitree Store</a></td>
+          </tr>
+          <tr>
+            <td>ZED X One 4K (×2)</td>
+            <td>$998</td>
+            <td><a href="https://www.stereolabs.com/store/products/zed-x-one-4k">Stereolabs</a></td>
+          </tr>
+          <tr>
+            <td>ZED X Stereo Camera</td>
+            <td>$599</td>
+            <td><a href="https://www.stereolabs.com/store/products/zed-x-stereo-camera">Stereolabs</a></td>
+          </tr>
+          <tr>
+            <td>ZED X Converter</td>
+            <td>$599</td>
+            <td><a href="https://www.stereolabs.com/store/products/zed-x-stereo-camera">Stereolabs</a></td>
+          </tr>
+          <tr>
+            <td>NVIDIA Jetson Orin Nano Super Developer Kit</td>
+            <td>$249</td>
+            <td><a href="https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/jetson-orin/nano-super-developer-kit/">NVIDIA</a></td>
+          </tr>
+          <tr>
+            <td>Power bank</td>
+            <td>~$50</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Buck Converter</td>
+            <td>~$50</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>PD Trigger</td>
+            <td>~$50</td>
+            <td>—</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>Total (approx.)</td>
+            <td>~$2,315</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
 
       <div class="equation-block">
         $$\sum_{i=1}^{n} x_i = x_1 + x_2 + \cdots + x_n$$
       </div>
 
-      <figure class="figure">
-        <img src="../images/blog/your-image.png" alt="Describe the image">
-        <figcaption class="figure-caption">Caption for your image or screenshot.</figcaption>
-      </figure>
+      
 
       <figure class="figure">
         <img src="../images/blog/your-animation.gif" alt="Describe the GIF">
