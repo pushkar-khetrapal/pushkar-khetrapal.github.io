@@ -176,7 +176,9 @@
       <h3>Mechanical Design</h3>
 
       <figure class="figure">
-        <img src="../images/blog/blackbox/design.gif" alt="">
+        <video src="../images/blog/blackbox/design.mp4" poster="../images/blog/blackbox/design.jpg" autoplay loop muted playsinline controls>
+          Your browser does not support embedded video.
+        </video>
         <figcaption class="figure-caption">Design</figcaption>
       </figure>
 
@@ -255,24 +257,52 @@
 
     <h3>Software Architecture</h3>
 
-    <p>The system provides a ROS2 interface and the software is divided into two main stages: data recording on the device and log processing/map generation.</p>
+    <figure class="figure">
+      <video src="../images/blog/blackbox/sensor_replay.mp4" poster="../images/blog/blackbox/sensor_replay.jpg" autoplay loop muted playsinline controls>
+        Your browser does not support embedded video.
+      </video>
+      <figcaption class="figure-caption">Sensor Replay</figcaption>
+    </figure>
+
     <p>
-        Has a interface with ROS2. The code written in two parts. Recording on device. Copy logs and build the maps.
-        A pseudo rosbag recorder has been written. As the the image data is very huge, 3 cameras frames 2 at 1080p@30hz, 1 at 4k@15hz.
-        normal rosbag record wouldn't sufficient. So, I used Zed SDK to record the data and for lidar I saved PCD files. 
-        Since individual sensor record wouldn't what we need. So I added a Master, which updates by each thread of sensors when 
-        they save the sensor data with timestampa and where they have saved. A Master has every timestamp information which helps 
-        us to replay the data.
+      The system provides a ROS2 interface and the software is divided 
+      into two main stages: 
+      data recording on the device and log processing/map generation.</p>
+    <p>
+      A custom pseudo-rosbag recorder was developed to handle the high 
+      data volume. The system records three cameras: two at 1080p @ 30 FPS 
+      and one at 4K @ 15 FPS, making a standard ROS2 bag inefficient for this 
+      use case.
     </p>
+    <p>
+      Instead of using a standard rosbag, 
+      the ZED SDK is used to record camera data, 
+      while LiDAR data is stored as PCD files. 
+      Since recording each sensor independently would 
+      make synchronization and replay difficult, 
+      a centralized Master coordinates all sensor threads. 
+      Whenever a sensor saves data, it reports the corresponding timestamp and file location to the Master. 
+      The Master maintains a unified timeline of all sensor data, 
+      enabling synchronized replay and subsequent map generation.
+    </p>
+
+    <figure class="figure">
+      <img src="../images/blog/blackbox/master.png" alt="Master">
+      <figcaption class="figure-caption">Master</figcaption>
+    </figure>
 
     <p>
         Calibration has done using target based markers. The all cameras has been calibrated with lidar. Will talk about calibration 
         in another blog.
     </p>
 
-    <p>
-        Some 3d map output.
-    </p>
+    <h3>Output - 3D Mapping Sample</h3>
+    <figure class="figure">
+      <video src="../images/blog/blackbox/lidar_map.mp4" poster="../images/blog/blackbox/lidar_map.jpg" autoplay loop muted playsinline controls>
+        Your browser does not support embedded video.
+      </video>
+      <figcaption class="figure-caption">Lidar Mapping</figcaption>
+    </figure>
 
     </div>
   </article>
