@@ -80,40 +80,83 @@
       </p>
       
       <p>
-        In SLAM, we don't know the post at all, and as well as map. Only given thing is clues. These places 
-        might be same (feature matching), we generally refer this as <b>Observations</b>. 
+        In SLAM, we don't know the pose at all, and as well as map. Only given thing is <b>Sensor Observations</b>. 
         Observations can be anything, like for motion model, you observe the data from wheel encoders or measure from IMU etc.
-        These measurements consist of noise and never going to 100% accurate.
-
+        These measurements consist of noise and never going to 100% accurate. 
+        Optimizing something without actually knowing it's correct state, it's a challenge. 
         </p>
-        
-        <P>
-            Thing like you are training a neural network, but your ground consist of random noise. And you need to eliminate that.
-        </P>
-        
+                
         <p>
             Assume you are driving a car, from point A to B when you observe distance from wheel odometry, 
-            it can vary everytime. So on what things we can rely on?
+            it is going vary everytime. So on what things we can rely on?
         </p>
 
         <p>
-            We need a system/model which will take care of noise from sensors and Estimate the best fitted poses such that 
-            the error is minimum.
+          The observations is consist of actual information with noise it. 
+          We need a system/model which will take care of noise from sensors and Estimate the best fitted poses such that 
+          the error is minimum.
         </p>
 
         <p>
-            The Observations consist of actual pose with noise, and assuming this noise to normally distributed. 
-            Which means when we take mean of observations we come down to actual pose. And secondly they can help us to 
-            determine the confidence on current measurements. 
+            Usually the noise is to be consider normally distributed. 
+            Which helps us to say to if we have enough samples mean becomes the actual measurement. And 
+            Variation in data will tell me how much am I confidence with my observation.
             As confidence will be inversely proportional to variance in observations.
         </p>
 
         <p>
-            Let's dive in Understanding how does noise is being formulated before we jump in estimating the poses.
+            Let's dive in understanding how does noise is being formulated before we jump on Optimization.
+        </p>
+        
+        <h3>Observations Representation</h3>
+        <p>
+          1. Feature representation : for matching in another frame
+          2. Euclidean distance between matched features
+          3. How confident are you about both have same position
+          4. Euclidean distance related to Covariance - information matrix
+          5. Ones match then gaussian relation to confident
+          6. Gaussian representation for feature matching
+          7. What is error?
+          8. mahalanobis distance
+          9. How does it affect error?
+          10. negative log representation of gaussian.
+          11. why minimizing is increasing the probability.
+          12. bayes theorem
+          13. representation of SLAM
+        </p>
+        <p>
+          Assume we detected corner features in a frame.
+          $$Points_n = [[x_1, y_1], [x_2, y_2], .., [x_n, y_n]]$$
+          And we can represents these as a vector $$F_n = [[f1_1, f1_2, .. f1_n], .., [fn_1, fn_2, .. fn_n]]$$
         </p>
 
         <p>
-            What is Gaussian Distribution? What are we expecting the result to be?
+          Similarly, we can detected in consecutive frame. And match the feature with prev frame to find correspondences.
+        </p>
+
+        <p>
+          How are we sure that the correspondences are correct?
+        </p>
+
+        <p>
+          
+        </p>
+
+        <p>
+          $$P(x, y) = ?$$
+        </p>
+        
+        <p>
+          Instead of determining the actual point, what if we represents it as a gaussian distribution.
+        </p>
+        
+        <p>
+          $$P(x) = \mathcal{N}(\mu_x, \sigma) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu_x)^2}{2\sigma^2}}$$
+          $$P(y) = \mathcal{N}(\mu_y, \sigma) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(y-\mu_y)^2}{2\sigma^2}}$$
+        </p>
+
+        <p>
+          P(x, y) = P(x)P(y)
         </p>
         <p>
             Assume, you are going a place A, and on google maps it is saying you will reach at 10:00 PM. What is the 
