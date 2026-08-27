@@ -1,0 +1,720 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A Life on Manifold</title>
+  <link rel="stylesheet" href="../blog.css">
+  <style>
+    .article-table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 28px;
+      border: 2px solid #555;
+    }
+    .article-table th,
+    .article-table td {
+      border: 1px solid #888;
+      padding: 12px 16px;
+      text-align: left;
+    }
+    .article-table thead th {
+      background: #f0f0f0;
+      border-bottom: 2px solid #555;
+    }
+    .article-table tfoot td {
+      font-weight: 700;
+      background: #f0f0f0;
+      border-top: 2px solid #555;
+    }
+    .figure-row {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .figure-cell {
+      flex: 1;
+      min-width: 0;
+    }
+    .figure-cell svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .figure-cell .figure-caption {
+      margin-top: 10px;
+    }
+    @media (max-width: 600px) {
+      .figure-row {
+        flex-direction: column;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+</head>
+<body>
+  <nav class="blog-nav">
+    <a href="../index.html">← Home</a>
+  </nav>
+
+  <article class="article">
+    <header class="article-header">
+      <h1 class="article-title">Non linear Optimization walkthrough</h1>
+      <div class="article-meta">
+        <span>Pushkar Khetrapal</span>
+        <span>July 2026</span>
+        <span>8 min read</span>
+      </div>
+    </header>
+
+    <div class="article-body">
+      <p>
+        How do we solve anything as human?
+      </p>
+      <p>
+        We always tends to solve something, making things better. Everyone is working on problem and finding optimal 
+        solution or work around which works well for specific problem.
+      </p>
+      
+      <p>
+        In SLAM, we don't know the post at all, and as well as map. Only given thing is clues. These places 
+        might be same (feature matching), we generally refer this as <b>Observations</b>. 
+        Observations can be anything, like for motion model, you observe the data from wheel encoders or measure from IMU etc.
+        These measurements consist of noise and never going to 100% accurate.
+
+        </p>
+        
+        <P>
+            Thing like you are training a neural network, but your ground consist of random noise. And you need to eliminate that.
+        </P>
+        
+        <p>
+            Assume you are driving a car, from point A to B when you observe distance from wheel odometry, 
+            it can vary everytime. So on what things we can rely on?
+        </p>
+
+        <p>
+            We need a system/model which will take care of noise from sensors and Estimate the best fitted poses such that 
+            the error is minimum.
+        </p>
+
+        <p>
+            The Observations consist of actual pose with noise, and assuming this noise to normally distributed. 
+            Which means when we take mean of observations we come down to actual pose. And secondly they can help us to 
+            determine the confidence on current measurements. 
+            As confidence will be inversely proportional to variance in observations.
+        </p>
+
+        <p>
+            Let's dive in Understanding how does noise is being formulated before we jump in estimating the poses.
+        </p>
+
+        <p>
+            What is Gaussian Distribution? What are we expecting the result to be?
+        </p>
+        <p>
+            Assume, you are going a place A, and on google maps it is saying you will reach at 10:00 PM. What is the 
+            gurrantee you will reach exactly at 10:00 PM?
+        </p>
+        <p>10:00 PM is just a reference isn't. You can reach 2 minutes before or after, depending upon unknown things.</p>
+
+        <p>
+            Now, ask different question of same thing, what are chances that I will reach at 10:00PM?
+        </p>
+        <p>
+            Since you have refence the probability at 10:00 PM has to be more. But how can we formulate this?
+        </p>
+        <p>
+            The answer is very simple, we need a PDF which tells at 10, the prob is max and should reduce according time uniformly.
+            Means, reaching 2 minutes before and after should consider as same probability.
+        </p>
+        <p>
+            Since we need a function which should be max at given point and reduce when we go apart. 
+            We know a function which do just opposite, $x^2$. This will be minimum at 0 and increase when we move away.
+        </p>
+
+        <figure class="figure">
+          <svg id="x-squared-plot" viewBox="0 0 680 300" role="img" aria-label="Plot of y equals x squared"></svg>
+          <figcaption class="figure-caption">$y = x^2$ — minimum at $x = 0$, increases symmetrically as $|x|$ grows.</figcaption>
+        </figure>
+
+        
+        <p>
+            Any positive power function will be symtrical function.
+            Question : Why $x^2$ not any postive power?
+        </p>
+
+        <p>
+            multiplying with -1. Changing the direction of function.
+        </p>
+
+        <figure class="figure">
+          <svg id="neg-x-squared-plot" viewBox="0 0 680 300" role="img" aria-label="Plot of y equals negative x squared"></svg>
+          <figcaption class="figure-caption">$y = -x^2$ — flipped parabola with maximum at $x = 0$, but negative elsewhere.</figcaption>
+        </figure>
+
+        <p>
+            Now, Probabilities can't be negative, taking exp of this function.
+            $$f(x) = e^{-x^2}$$
+        </p>
+
+        <figure class="figure">
+          <svg id="exp-neg-x-squared-plot" viewBox="0 0 680 300" role="img" aria-label="Plot of y equals e to the negative x squared"></svg>
+          <figcaption class="figure-caption">$y = e^{-x^2}$ — always positive, peaks at $x = 0$, decays to $0$ as $|x|$ grows.</figcaption>
+        </figure>
+        
+        <p>
+            See, beauty of taking power of constant as function. This function can't be negative anywhere, and when $x \to \pm\infty$,
+            $y \to 0$.
+        </p>
+        
+        <p>
+            Questions : why exp? why not any number?
+        </p>
+
+        <p>
+            Remember we are going to mall, This formulation can tell us about probability for reaching at exactly at 10:00 PM.
+            Now the question is how certain will I? Is it like 90% chances or 50 chances? how will I decide this now?
+        </p>
+
+        <figure class="figure">
+          <div class="figure-row">
+            <div class="figure-cell">
+              <svg id="gaussian-low-variance" viewBox="0 0 320 260" role="img" aria-label="Gaussian with low variance"></svg>
+              <figcaption class="figure-caption">Low variance ($\sigma^2 = 0.05$) — narrow spread, higher confidence.</figcaption>
+            </div>
+            <div class="figure-cell">
+              <svg id="gaussian-high-variance" viewBox="0 0 320 260" role="img" aria-label="Gaussian with high variance"></svg>
+              <figcaption class="figure-caption">High variance ($\sigma^2 = 0.40$) — wide spread, lower confidence.</figcaption>
+            </div>
+          </div>
+        </figure>
+
+        
+        <p>
+            Now, the question is how does the $N$ spreads? This actually will explain by adding more samples. 
+            As we don't have exact answer to problem, and we only estimating the predictions, <b>
+                More samples will give more 
+                confidence and will tell how much we should trust our observations.
+            </b>
+        </p>
+
+        <p>
+            Given, distance from A to B, and it was observed by one source of sensor :
+        </p>
+
+        <table class="article-table">
+          <thead>
+            <tr>
+              <th>Observation</th>
+              <th>Distance (m)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>10.3</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>9.8</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>10.1</td>
+            </tr>
+            <tr>
+            <td>4</td>
+            <td>10.2</td>
+            </tr>
+            <tr>
+            <td>5</td>
+            <td>9.8</td>
+            </tr>
+            <tr>
+            <td>6</td>
+            <td>9.4</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="equation-block">$$mean : \mu = 9.933 $$</div>
+
+        <table class="article-table">
+          <thead>
+            <tr>
+              <th>Observation</th>
+              <th>$x - \mu$</th>
+              <th>$(x - \mu)^2$</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>0.367</td>
+              <td>0.134</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>-0.133</td>
+              <td>0.018</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>0.167</td>
+              <td>0.028</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>0.267</td>
+              <td>0.071</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>-0.133</td>
+              <td>0.018</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>-0.533</td>
+              <td>0.284</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2">$\sum (x - \mu)^2$</td>
+              <td>0.553</td>
+            </tr>
+            <tr>
+              <td colspan="2">Variance $\sigma^2 = \frac{1}{n}\sum (x - \mu)^2$</td>
+              <td>0.092</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <figure class="figure">
+          <svg id="gaussian-plot" viewBox="0 0 680 300" role="img" aria-label="Gaussian distribution with observed distances"></svg>
+          <figcaption class="figure-caption">
+            Fitted Gaussian ($\mu = 9.933$, $\sigma^2 = 0.092$) with observed distances in red.
+          </figcaption>
+        </figure>
+        <p>
+            Above, Gaussian represents as Probability Density Function (PDF), 
+            the mean will have most probability and the confidence will be inversely proportional to 
+            spread of the graph which is nothing but represents as variance.
+        </p>
+    
+        <p>
+            $$confidence \propto \frac{1}{\sigma^2}$$
+        </p>
+
+
+        <p>
+            Updating in above formutation, 
+            $$\mathcal{N} = e^{-x^2/\sigma^2}$$
+        </p>
+
+        <p>
+            Now, since mean can't be zero all the time, updating in formula,
+        </p>
+
+        <p>
+            $$\mathcal{N}(\mu, \sigma) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$$
+        </p>
+
+        <p>
+            We have talked about the 1 dimension till now, but life gives more clues that one. How to determine actions from multiple 
+            observations?
+        </p>
+
+        <p>
+            Let's understand what Covariance is?
+        </p>
+
+        <p>
+            Variance tells about distribution of specific dimension. 
+            But Covariance tells you how two dimensions vary together — whether they tend to increase/decrease together or in opposite directions.
+        </p>
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+  </article>
+  <script>
+    (function () {
+      const ns = 'http://www.w3.org/2000/svg';
+      const width = 680;
+      const height = 300;
+      const margin = { top: 24, right: 24, bottom: 44, left: 56 };
+
+      function el(name, attrs) {
+        const node = document.createElementNS(ns, name);
+        Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+        return node;
+      }
+
+      function textEl(x, y, content, attrs = {}) {
+        const node = el('text', {
+          x,
+          y,
+          'font-family': 'Inter, system-ui, sans-serif',
+          'font-size': '12',
+          fill: '#6b6b6b',
+          ...attrs,
+        });
+        node.textContent = content;
+        return node;
+      }
+
+      function drawFunctionPlot(svgId, options) {
+        const {
+          fn,
+          xMin,
+          xMax,
+          yMin,
+          yMax,
+          xLabel = 'x',
+          yLabel = 'y',
+          showOrigin = true,
+          plotWidth = width,
+          plotHeight = height,
+          plotMargin = margin,
+        } = options;
+
+        const plotW = plotWidth - plotMargin.left - plotMargin.right;
+        const plotH = plotHeight - plotMargin.top - plotMargin.bottom;
+        const xScale = (x) => plotMargin.left + ((x - xMin) / (xMax - xMin)) * plotW;
+        const yScale = (y) => plotMargin.top + plotH - ((y - yMin) / (yMax - yMin)) * plotH;
+
+        const svg = document.getElementById(svgId);
+        svg.setAttribute('viewBox', `0 0 ${plotWidth} ${plotHeight}`);
+        const baselineY = yScale(0);
+        const originX = xScale(0);
+
+        svg.appendChild(el('rect', {
+          x: plotMargin.left,
+          y: plotMargin.top,
+          width: plotW,
+          height: plotH,
+          fill: '#fafafa',
+          stroke: '#d0d0d0',
+          'stroke-width': 1,
+        }));
+
+        for (let i = 1; i <= 3; i++) {
+          const y = plotMargin.top + (i / 4) * plotH;
+          svg.appendChild(el('line', {
+            x1: plotMargin.left,
+            y1: y,
+            x2: plotMargin.left + plotW,
+            y2: y,
+            stroke: '#ececec',
+            'stroke-width': 1,
+          }));
+        }
+
+        if (showOrigin && 0 >= yMin && 0 <= yMax) {
+          svg.appendChild(el('line', {
+            x1: plotMargin.left,
+            y1: baselineY,
+            x2: plotMargin.left + plotW,
+            y2: baselineY,
+            stroke: '#999',
+            'stroke-width': 1,
+            'stroke-dasharray': '4 4',
+          }));
+        }
+
+        if (showOrigin && 0 >= xMin && 0 <= xMax) {
+          svg.appendChild(el('line', {
+            x1: originX,
+            y1: plotMargin.top,
+            x2: originX,
+            y2: plotMargin.top + plotH,
+            stroke: '#999',
+            'stroke-width': 1,
+            'stroke-dasharray': '4 4',
+          }));
+        }
+
+        svg.appendChild(el('line', {
+          x1: plotMargin.left,
+          y1: plotMargin.top + plotH,
+          x2: plotMargin.left + plotW,
+          y2: plotMargin.top + plotH,
+          stroke: '#242424',
+          'stroke-width': 1.25,
+        }));
+
+        const steps = 200;
+        let curvePath = '';
+        for (let i = 0; i <= steps; i++) {
+          const x = xMin + (i / steps) * (xMax - xMin);
+          const cmd = i === 0 ? 'M' : 'L';
+          curvePath += `${cmd}${xScale(x)},${yScale(fn(x))} `;
+        }
+        svg.appendChild(el('path', {
+          d: curvePath.trim(),
+          fill: 'none',
+          stroke: '#242424',
+          'stroke-width': 2,
+        }));
+
+        const xTicks = 6;
+        for (let i = 0; i <= xTicks; i++) {
+          const x = xMin + (i / xTicks) * (xMax - xMin);
+          const px = xScale(x);
+          svg.appendChild(el('line', {
+            x1: px,
+            y1: plotMargin.top + plotH,
+            x2: px,
+            y2: plotMargin.top + plotH + 5,
+            stroke: '#242424',
+            'stroke-width': 1,
+          }));
+          svg.appendChild(textEl(px, plotMargin.top + plotH + 18, x.toFixed(0), {
+            'text-anchor': 'middle',
+          }));
+        }
+
+        svg.appendChild(textEl(plotMargin.left + plotW / 2, plotHeight - 6, xLabel, {
+          'text-anchor': 'middle',
+          'font-size': '13',
+          fill: '#242424',
+        }));
+
+        svg.appendChild(textEl(14, plotMargin.top + plotH / 2, yLabel, {
+          transform: `rotate(-90 14 ${plotMargin.top + plotH / 2})`,
+          'text-anchor': 'middle',
+          'font-size': '13',
+          fill: '#242424',
+        }));
+      }
+
+      function drawGaussianPDF(svgId, options) {
+        const {
+          mu = 0,
+          sigma,
+          variance,
+          xMin = -2.5,
+          xMax = 2.5,
+          yMax,
+          plotWidth = 320,
+          plotHeight = 260,
+          plotMargin = { top: 36, right: 16, bottom: 40, left: 44 },
+          title,
+        } = options;
+
+        const pdf = (x) =>
+          (1 / (sigma * Math.sqrt(2 * Math.PI))) *
+          Math.exp(-0.5 * ((x - mu) / sigma) ** 2);
+        const peak = pdf(mu);
+        const sharedYMax = yMax || peak * 1.1;
+
+        drawFunctionPlot(svgId, {
+          fn: pdf,
+          xMin,
+          xMax,
+          yMin: 0,
+          yMax: sharedYMax,
+          xLabel: 'offset from 10:00 PM',
+          yLabel: 'PDF',
+          showOrigin: true,
+          plotWidth,
+          plotHeight,
+          plotMargin,
+        });
+
+        if (title) {
+          const svg = document.getElementById(svgId);
+          svg.appendChild(textEl(plotWidth / 2, 18, title, {
+            'text-anchor': 'middle',
+            'font-size': '12',
+            'font-weight': '600',
+            fill: '#242424',
+          }));
+        }
+      }
+
+      const compareYMax = (1 / (Math.sqrt(0.05) * Math.sqrt(2 * Math.PI))) * 1.08;
+
+      drawGaussianPDF('gaussian-low-variance', {
+        mu: 0,
+        sigma: Math.sqrt(0.05),
+        variance: 0.05,
+        yMax: compareYMax,
+        title: 'High confidence',
+      });
+
+      drawGaussianPDF('gaussian-high-variance', {
+        mu: 0,
+        sigma: Math.sqrt(0.4),
+        variance: 0.4,
+        yMax: compareYMax,
+        title: 'Low confidence',
+      });
+
+      drawFunctionPlot('x-squared-plot', {
+        fn: (x) => x * x,
+        xMin: -3,
+        xMax: 3,
+        yMin: 0,
+        yMax: 10,
+      });
+
+      drawFunctionPlot('neg-x-squared-plot', {
+        fn: (x) => -(x * x),
+        xMin: -3,
+        xMax: 3,
+        yMin: -10,
+        yMax: 1,
+      });
+
+      drawFunctionPlot('exp-neg-x-squared-plot', {
+        fn: (x) => Math.exp(-(x * x)),
+        xMin: -3,
+        xMax: 3,
+        yMin: 0,
+        yMax: 1.05,
+      });
+
+      const observations = [10.3, 9.8, 10.1, 10.2, 9.8, 9.4];
+      const mu = observations.reduce((sum, x) => sum + x, 0) / observations.length;
+      const variance = observations.reduce((sum, x) => sum + (x - mu) ** 2, 0) / observations.length;
+      const sigma = Math.sqrt(variance);
+
+      const plotW = width - margin.left - margin.right;
+      const plotH = height - margin.top - margin.bottom;
+
+      const xMin = mu - 3.5 * sigma;
+      const xMax = mu + 3.5 * sigma;
+      const pdf = (x) =>
+        (1 / (sigma * Math.sqrt(2 * Math.PI))) *
+        Math.exp(-0.5 * ((x - mu) / sigma) ** 2);
+      const yMax = pdf(mu) * 1.12;
+
+      const xScale = (x) => margin.left + ((x - xMin) / (xMax - xMin)) * plotW;
+      const yScale = (y) => margin.top + plotH - (y / yMax) * plotH;
+
+      const svg = document.getElementById('gaussian-plot');
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+      const baselineY = margin.top + plotH;
+
+      svg.appendChild(el('rect', {
+        x: margin.left,
+        y: margin.top,
+        width: plotW,
+        height: plotH,
+        fill: '#fafafa',
+        stroke: '#d0d0d0',
+        'stroke-width': 1,
+      }));
+
+      for (let i = 1; i <= 3; i++) {
+        const y = margin.top + (i / 4) * plotH;
+        svg.appendChild(el('line', {
+          x1: margin.left,
+          y1: y,
+          x2: margin.left + plotW,
+          y2: y,
+          stroke: '#ececec',
+          'stroke-width': 1,
+        }));
+      }
+
+      svg.appendChild(el('line', {
+        x1: margin.left,
+        y1: baselineY,
+        x2: margin.left + plotW,
+        y2: baselineY,
+        stroke: '#242424',
+        'stroke-width': 1.25,
+      }));
+
+      const steps = 200;
+      let curvePath = '';
+      for (let i = 0; i <= steps; i++) {
+        const x = xMin + (i / steps) * (xMax - xMin);
+        const cmd = i === 0 ? 'M' : 'L';
+        curvePath += `${cmd}${xScale(x)},${yScale(pdf(x))} `;
+      }
+      svg.appendChild(el('path', {
+        d: curvePath.trim(),
+        fill: 'none',
+        stroke: '#242424',
+        'stroke-width': 2,
+      }));
+
+      const grouped = {};
+      observations.forEach((x, index) => {
+        const key = x.toFixed(1);
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(index);
+      });
+
+      observations.forEach((x, index) => {
+        const key = x.toFixed(1);
+        const group = grouped[key];
+        const groupIndex = group.indexOf(index);
+        const groupSize = group.length;
+        const cx = xScale(x) + (groupIndex - (groupSize - 1) / 2) * 7;
+
+        svg.appendChild(el('circle', {
+          cx,
+          cy: yScale(pdf(x)),
+          r: 5,
+          fill: '#d62828',
+          stroke: '#fff',
+          'stroke-width': 1.5,
+        }));
+      });
+
+      const xTicks = 5;
+      for (let i = 0; i <= xTicks; i++) {
+        const x = xMin + (i / xTicks) * (xMax - xMin);
+        const px = xScale(x);
+        svg.appendChild(el('line', {
+          x1: px,
+          y1: baselineY,
+          x2: px,
+          y2: baselineY + 5,
+          stroke: '#242424',
+          'stroke-width': 1,
+        }));
+        svg.appendChild(textEl(px, baselineY + 20, x.toFixed(1), {
+          'text-anchor': 'middle',
+        }));
+      }
+
+      svg.appendChild(textEl(margin.left + plotW / 2, height - 6, 'Distance (m)', {
+        'text-anchor': 'middle',
+        'font-size': '13',
+        fill: '#242424',
+      }));
+
+      svg.appendChild(textEl(16, margin.top + plotH / 2, 'Density', {
+        transform: `rotate(-90 16 ${margin.top + plotH / 2})`,
+        'text-anchor': 'middle',
+        'font-size': '13',
+        fill: '#242424',
+      }));
+    })();
+  </script>
+</body>
+</html>
