@@ -85,7 +85,7 @@
         These measurements consist of noise and never going to 100% accurate. 
         Optimizing something without actually knowing it's correct state, it's a challenge. 
         </p>
-                
+
         <p>
             Assume you are driving a car, from point A to B when you observe distance from wheel odometry, 
             it is going vary everytime. So on what things we can rely on?
@@ -124,30 +124,90 @@
           12. bayes theorem
           13. representation of SLAM
         </p>
+        
         <p>
-          Assume we detected corner features in a frame.
-          $$Points_n = [[x_1, y_1], [x_2, y_2], .., [x_n, y_n]]$$
-          And we can represents these as a vector $$F_n = [[f1_1, f1_2, .. f1_n], .., [fn_1, fn_2, .. fn_n]]$$
+          Assume we detect and match $n$ corner features in two consecutive frames. 
+          $$\mathcal{P_1} = \{\mathbf{a}_1, \mathbf{a}_2, \ldots, \mathbf{a}_n\}$$
+          $$\mathcal{P_2} = \{\mathbf{b}_1, \mathbf{b}_2, \ldots, \mathbf{b}_n\}$$
+          $$
+          \mathbf{P_1} =
+          \begin{bmatrix}
+            ax_1 & ay_1 \\
+            ax_2 & ay_2 \\
+            \vdots & \vdots \\
+            ax_n & ay_n
+          \end{bmatrix} \in \mathbb{R}^{n \times 2} \quad
+          \mathbf{P_2} =
+          \begin{bmatrix}
+            bx_1 & by_1 \\
+            bx_2 & by_2 \\
+            \vdots & \vdots \\
+            bx_n & by_n
+          \end{bmatrix} \in \mathbb{R}^{n \times 2}.
+          $$
+          We know, $${P_1}_i == {P_2}_i$$
+          Also,
+          $\mathbf{Fe_1}_i = (fe_{i,1}, fe_{i,2}, \ldots, fe_{i,d})^\top \in \mathbb{R}^d$ for feature representation across $[x, y]$.
+          Stacking these descriptors gives the feature matrix,
+          $$\mathbf{Fe_1} =
+          \begin{bmatrix}
+            \mathbf{fe_1}_1^\top \\
+            \mathbf{fe_1}_2^\top \\
+            \vdots \\
+            \mathbf{fe_1}_n^\top
+          \end{bmatrix} \in \mathbb{R}^{n \times d} \quad
+          \mathbf{Fe_2} =
+          \begin{bmatrix}
+            \mathbf{fe_2}_1^\top \\
+            \mathbf{fe_2}_2^\top \\
+            \vdots \\
+            \mathbf{fe_2}_n^\top
+          \end{bmatrix} \in \mathbb{R}^{n \times d}
+          $$
         </p>
 
         <p>
-          Similarly, we can detected in consecutive frame. And match the feature with prev frame to find correspondences.
+          The matches are okay, but how do we know which match is strong? Since we have discriptor around all the points. 
+            The squared descriptor distance for matched feature $i$ can be represents how strong the match is. 
+          $$D_i = \|\mathbf{fe_1}_i - \mathbf{fe_2}_i\|_2^2.$$
+        </p>
+        <p>
+            The confidence is inversely proportional to squared descriptor distance.
+        </p>
+        <p>
+            Now, we know the matches and 
+        </p>
+        <p>
+          In the next frame we detect corners
+          $\mathbf{p}'_j = (x'_j,\, y'_j)^\top$ with descriptors $\mathbf{f}'_j$, giving
+          $\mathbf{P}' \in \mathbb{R}^{m \times 2}$ and $\mathbf{F}' \in \mathbb{R}^{m \times d}$.
+          To find correspondences, compare descriptors across frames using the distance matrix
+          $$D_{ij} = \|\mathbf{f}_i - \mathbf{f}'_j\|_2, \qquad
+          j_i^\ast = \arg\min_j D_{ij}.$$
+          A smaller $D_{ij}$ indicates a stronger match between feature $i$ and feature $j$.
         </p>
 
         <p>
-          How are we sure that the correspondences are correct?
-        </p>
-
-        <p>
+          How confident are we that these correspondences are correct?</p>
           
-        </p>
-
         <p>
-          $$P(x, y) = ?$$
+            For the image location, instead of treating
+          a corner as a fixed coordinate $[x, y]$, model it as a random vector
+          $\mathbf{p} = [x,\, y]^\top \in \mathbb{R}^2$ with mean
+          $\boldsymbol{\mu} = [\mu_x,\, \mu_y]^\top$ and covariance
+          $\boldsymbol{\Sigma} \in \mathbb{R}^{2 \times 2}$. The joint density is then
+          $$P(\mathbf{p}) = P(x, y) =
+          \mathcal{N}(\mathbf{p};\, \boldsymbol{\mu},\, \boldsymbol{\Sigma})
+          = \frac{1}{2\pi \sqrt{|\boldsymbol{\Sigma}|}}
+          \exp\!\left(-\tfrac{1}{2}(\mathbf{p} - \boldsymbol{\mu})^\top
+          \boldsymbol{\Sigma}^{-1}(\mathbf{p} - \boldsymbol{\mu})\right).$$
+          When $\boldsymbol{\Sigma} = \mathrm{diag}(\sigma_x^2, \sigma_y^2)$, this factorizes as
+          $P(x, y) = P(x)\,P(y)$; if further $\sigma_x = \sigma_y = \sigma$, the exponent reduces to the
+          squared Euclidean distance $\|\mathbf{p} - \boldsymbol{\mu}\|^2$ up to scale.
         </p>
         
         <p>
-          Instead of determining the actual point, what if we represents it as a gaussian distribution.
+          Expanding the diagonal case, where $x$ and $y$ are treated as independent:
         </p>
         
         <p>
@@ -156,7 +216,7 @@
         </p>
 
         <p>
-          P(x, y) = P(x)P(y)
+          $$P(x, y) = P(x)\,P(y)$$
         </p>
         <p>
             Assume, you are going a place A, and on google maps it is saying you will reach at 10:00 PM. What is the 

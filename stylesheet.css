@@ -81,11 +81,13 @@ td {
   vertical-align: middle;
 }
 
-.blog-thumb {
+.blog-thumb,
+video.blog-thumb {
   width: 160px;
   height: 100px;
   object-fit: cover;
   border-radius: 4px;
+  display: block;
 }
 
 .blog-date {
