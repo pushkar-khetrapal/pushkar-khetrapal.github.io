@@ -87,8 +87,50 @@
         </p>
 
         <p>
-            Assume you are driving a car, from point A to B when you observe distance from wheel odometry, 
-            it is going vary everytime. So on what things we can rely on?
+          In SLAM we usually ask given observation what is my pose? 
+        </p>
+        <p>
+          $$P(Pose|observation) = ?$$
+        </p>
+        <p>Formulating this as a problem can become a challenge, instead of this what if we ask, given 
+          the pose can we predict the observation? </p>
+          $$P(observation|Pose) = ?$$
+        <p>
+          In general finding correspondences in multiple frames can be easy. Ones you know the find 
+          correspondences and you predict observation.
+          This becomes a <b>Optimization Problem</b>.
+        </p>
+
+        <p>
+          Now, as we know Bayes' theorem: given $B$, what is the probability of $A$?
+        </p>
+
+        <p>
+          $$P(A|B) = \frac{P(A \cap B)}{P(B)}$$
+        </p>
+        <p>
+          Similarly, given $A$, what is the probability of $B$?
+        </p>
+        <p>
+          $$P(B|A) = \frac{P(A \cap B)}{P(A)}$$
+        </p>
+
+        <p>
+          Equating both expressions for $P(A \cap B)$,
+          $$P(A|B).P(B) = P(B|A).P(A)$$
+        </p>
+
+        <p>
+          Using Bayes theorem,
+          $$P(pose|observation) = \frac{P(observation|pose).P(pose)}{P(observation)}$$
+        </p>
+        <p>
+          Since, $P(observation)$ is independent of pose, therefore, it usually not consider.
+        </p>
+
+        <p>
+          So, it becomes
+          $$P(pose|observation) \propto P(observation|pose).P(pose)$$
         </p>
 
         <p>
@@ -109,7 +151,7 @@
         </p>
         
         <h3>Observations Representation</h3>
-        <p>
+        <!-- <p>
           1. Feature representation : for matching in another frame
           2. Euclidean distance between matched features
           3. How confident are you about both have same position
@@ -123,7 +165,7 @@
           11. why minimizing is increasing the probability.
           12. bayes theorem
           13. representation of SLAM
-        </p>
+        </p> -->
         
         <p>
           Assume we detect and match $n$ corner features in two consecutive frames. 
@@ -175,7 +217,7 @@
             The confidence is inversely proportional to squared descriptor distance.
         </p>
         <p>
-            Now, we know the matches and 
+            Now, since we know the matches 
         </p>
         <p>
           In the next frame we detect corners
